@@ -11,10 +11,12 @@ import androidx.core.view.isVisible
 import com.example.lesson6.network.ApiClient
 import com.example.lesson6.network.WeatherService
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
 
 class MainActivity : Activity() {
+    private val disposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +30,7 @@ class MainActivity : Activity() {
         val loading = findViewById<ProgressBar>(R.id.loading)
         loading.isVisible = true
 
-        ApiClient.retrofit
+        val result = ApiClient.retrofit
             .create(WeatherService::class.java)
             .getWeather(cityName)
             .subscribeOn(Schedulers.io())
@@ -44,9 +46,17 @@ class MainActivity : Activity() {
                 showError("Failure : ${it.message}")
                 loading.isVisible = false
             })
+
+        disposable.add(result)
     }
 
     private fun showError(message: String) {
         Toast.makeText(this@MainActivity, message, Toast.LENGTH_LONG).show()
     }
+
+    override fun onDestroy() {
+        disposable.dispose()
+        super.onDestroy()
+    }
+
 }
