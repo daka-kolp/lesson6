@@ -72,4 +72,8 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.gson)
+
+    implementation(libs.rxjava2.rxandroid)
+    implementation(libs.rxjava2.rxandroid)
+    implementation(libs.retrofit2.adapter.rxjava2)
 }

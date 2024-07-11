@@ -8,11 +8,11 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
-import com.example.lesson6.models.Weather
 import com.example.lesson6.network.ApiClient
 import com.example.lesson6.network.WeatherService
-import retrofit2.Call
-import retrofit2.Response
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+
 
 class MainActivity : Activity() {
 
@@ -31,29 +31,18 @@ class MainActivity : Activity() {
         ApiClient.retrofit
             .create(WeatherService::class.java)
             .getWeather(cityName)
-            .enqueue(object : retrofit2.Callback<Weather> {
-                override fun onResponse(p0: Call<Weather>, p1: Response<Weather>) {
-                    val weather = p1.body()
-
-                    if (weather == null) {
-                        showError("No Data, cannot be parsed")
-                        loading.isVisible = false
-                        return
-                    }
-
-                    findViewById<TextView>(R.id.city).text = cityName
-                    findViewById<TextView>(R.id.temperature).text = weather.temperature
-                    findViewById<TextView>(R.id.wind).text = weather.wind
-                    findViewById<TextView>(R.id.description).text = weather.description
-                    findViewById<TextView>(R.id.forecast).text = weather.forecastFormatted()
-
-                    loading.isVisible = false
-                }
-
-                override fun onFailure(p0: Call<Weather>, p1: Throwable) {
-                    showError("Failure : ${p1.message}")
-                    loading.isVisible = false
-                }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                findViewById<TextView>(R.id.city).text = cityName
+                findViewById<TextView>(R.id.temperature).text = it.temperature
+                findViewById<TextView>(R.id.wind).text = it.wind
+                findViewById<TextView>(R.id.description).text = it.description
+                findViewById<TextView>(R.id.forecast).text = it.forecastFormatted()
+                loading.isVisible = false
+            }, {
+                showError("Failure : ${it.message}")
+                loading.isVisible = false
             })
     }
 
