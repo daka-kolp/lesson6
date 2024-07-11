@@ -18,15 +18,13 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.weather_layout)
         val confirmButton = findViewById<Button>(R.id.confirm)
         confirmButton.setOnClickListener { getWeather() }
     }
 
     private fun getWeather() {
-        val cityTextField = findViewById<EditText>(R.id.input_text)
-        val cityName = cityTextField.text.toString()
+        val cityName = findViewById<EditText>(R.id.input_text).text.toString()
         val loading = findViewById<ProgressBar>(R.id.loading)
         loading.isVisible = true
 
@@ -43,17 +41,12 @@ class MainActivity : Activity() {
                         return
                     }
 
-                    val city = findViewById<TextView>(R.id.city)
-                    val temperature = findViewById<TextView>(R.id.temperature)
-                    val wind = findViewById<TextView>(R.id.wind)
-                    val info = findViewById<TextView>(R.id.description)
-                    val forecast = findViewById<TextView>(R.id.forecast)
+                    findViewById<TextView>(R.id.city).text = cityName
+                    findViewById<TextView>(R.id.temperature).text = weather.temperature
+                    findViewById<TextView>(R.id.wind).text = weather.wind
+                    findViewById<TextView>(R.id.description).text = weather.description
+                    findViewById<TextView>(R.id.forecast).text = weather.forecastFormatted()
 
-                    city.text = cityName
-                    temperature.text = weather.temperature
-                    wind.text = weather.wind
-                    info.text = weather.description
-                    forecast.text = weather.forecastFormatted()
                     loading.isVisible = false
                 }
 

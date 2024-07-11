@@ -1,4 +1,5 @@
 [versions]
+adapterRxjava2 = "2.3.0"
 agp = "8.4.0"
 converterGson = "2.11.0"
 gson = "2.11.0"
@@ -14,8 +15,11 @@ okhttp = "4.12.0"
 cardview = "1.0.0"
 constraintlayout = "2.1.4"
 playServicesContextmanager = "9.4.0"
+rxandroid = "3.0.2"
+rxjava = "3.x.y"
 
 [libraries]
+adapter-rxjava2 = { module = "com.sqqareup.retrofit2:adapter-rxjava2", version.ref = "adapterRxjava2" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
@@ -38,6 +42,8 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "converte
 androidx-cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 play-services-contextmanager = { group = "com.google.android.gms", name = "play-services-contextmanager", version.ref = "playServicesContextmanager" }
+rxandroid = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxandroid" }
+rxjava = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxjava" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
