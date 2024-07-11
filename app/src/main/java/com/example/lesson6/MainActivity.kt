@@ -1,47 +1,71 @@
 package com.example.lesson6
 
+import android.app.Activity
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.lesson6.ui.theme.Lesson6Theme
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
+import com.example.lesson6.models.Weather
+import com.example.lesson6.network.ApiClient
+import com.example.lesson6.network.WeatherService
+import retrofit2.Call
+import retrofit2.Response
 
-class MainActivity : ComponentActivity() {
+class MainActivity : Activity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            Lesson6Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+
+        setContentView(R.layout.weather_layout)
+
+        val confirmButton = findViewById<Button>(R.id.confirm)
+
+        confirmButton.setOnClickListener {
+            getWeather()
         }
+
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    private fun getWeather() {
+        val cityTextField = findViewById<EditText>(R.id.city)
+        val cityValue = cityTextField.text.toString()
+        val loading = findViewById<ProgressBar>(R.id.loading)
+        loading.visibility = View.VISIBLE
+        ApiClient.retrofit
+            .create(WeatherService::class.java)
+            .getWeather(cityValue)
+            .enqueue(object : retrofit2.Callback<Weather> {
+                override fun onResponse(p0: Call<Weather>, p1: Response<Weather>) {
+                    val weather = p1.body()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Lesson6Theme {
-        Greeting("Android")
+                    if (weather == null) {
+                        showError("No Data, cannot be parsed")
+                        return
+                    }
+
+                    val temperature = findViewById<TextView>(R.id.temperature)
+                    val wind = findViewById<TextView>(R.id.wind)
+                    val info = findViewById<TextView>(R.id.description)
+                    val forecast = findViewById<TextView>(R.id.forecast)
+
+                    temperature.text = weather.temperature
+                    wind.text = weather.wind
+                    info.text = weather.description
+                    forecast.text = weather.forecastFormatted()
+                    loading.visibility = View.GONE
+                }
+
+                override fun onFailure(p0: Call<Weather>, p1: Throwable) {
+                    showError("Failure : ${p1.message}")
+                    loading.visibility = View.GONE
+                }
+            })
+    }
+
+    private fun showError(message: String) {
+        Toast.makeText(this@MainActivity, message, Toast.LENGTH_LONG).show()
     }
 }
