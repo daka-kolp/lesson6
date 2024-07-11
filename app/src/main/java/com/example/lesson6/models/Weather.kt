@@ -8,7 +8,7 @@ data class Weather(
 ) {
     fun forecastFormatted(): String {
         return forecast.fold("") { sum, element ->
-            "$sum day: ${element.day} wind: ${element.wind} desc:${element.description}\n"
+            "$sum ${element.day}: wind - ${element.wind} temp - ${element.temperature}\n"
         }
     }
 }
