@@ -25,14 +25,14 @@ class MainActivity : Activity() {
     }
 
     private fun getWeather() {
-        val cityTextField = findViewById<EditText>(R.id.city)
-        val cityValue = cityTextField.text.toString()
+        val cityTextField = findViewById<EditText>(R.id.input_text)
+        val cityName = cityTextField.text.toString()
         val loading = findViewById<ProgressBar>(R.id.loading)
         loading.isVisible = true
 
         ApiClient.retrofit
             .create(WeatherService::class.java)
-            .getWeather(cityValue)
+            .getWeather(cityName)
             .enqueue(object : retrofit2.Callback<Weather> {
                 override fun onResponse(p0: Call<Weather>, p1: Response<Weather>) {
                     val weather = p1.body()
@@ -43,11 +43,13 @@ class MainActivity : Activity() {
                         return
                     }
 
+                    val city = findViewById<TextView>(R.id.city)
                     val temperature = findViewById<TextView>(R.id.temperature)
                     val wind = findViewById<TextView>(R.id.wind)
                     val info = findViewById<TextView>(R.id.description)
                     val forecast = findViewById<TextView>(R.id.forecast)
 
+                    city.text = cityName
                     temperature.text = weather.temperature
                     wind.text = weather.wind
                     info.text = weather.description
